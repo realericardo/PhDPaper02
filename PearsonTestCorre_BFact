@@ -1,0 +1,85 @@
+#======================================== ggbetweenstats =========================================#
+##' Thesis: Paper02 - Quantifying ecosystem services                                              #
+##' Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com                                      #
+##' Adapted from: Zablotski (2022, May 16). yuzaR-Blog: R demo | Kruskal-Wallis test |            #
+##' How to conduct, visualize, interpret & more 😉.                                               #
+##' Retrieved from https://yuzar-blog.netlify.app/posts/2022-04-13-kw/                            #
+##' Created: Apr/2022                                                                             #
+##' Last commit: Apr/2022                                                                         #
+#=================================================================================================#
+
+setwd("...")
+
+# Packages
+library(readr)
+library(tidyverse)
+library(ggstatsplot)
+library(effectsize)
+library(rstantools)
+library(dlookr)
+library(ggplot2)
+library(ggpmisc)
+library(scales)
+library(car)
+library(afex)
+library(effects)    # for model visualization & more
+library(performance)    # model assumptions & performance
+library(pcal) #bfcator_interpret
+
+#============================================= Data ==============================================#
+Data <- read.csv(".../Data.csv")
+
+#============================== Trend groups Classification Ant.Nat ==============================#
+#========================================= Normality test ========================================#
+Data %>%
+  group_by(biome) %>% 
+  normality(TWSrec_mm_SL_s85)
+### Shapiro-Wilk test
+## p<0.05 => NOT normally -> even if only one group p<0.05 is sufficient to say
+## p>0.05 => normally distributed
+
+#==================== Levene's test for homogeneity of variance across groups. ===================#
+leveneTest(TWSrec_mm_SL_s85 ~ biome, Data)
+## p<0.05 => variance are different >> Welch's ANOVA >> F
+## p>0.05 => variance NOT Different >> Fisher  ANOVA >> T
+
+#================================== Pearson's test correlation ===================================#
+#> Using Bayes Factor to compare H0/H1 
+#> Bayes factors (B) indicate the relative strength of evidence for two theories
+#> (Berger and Delampady, 1987; Kass and Wasserman, 1996; Goodman, 1999; Lee and Wagenmakers,
+#> 2005; Gallistel, 2009; Rouder et al., 2009; Dienes, 2011; Kruschke, 2011)
+#> H0: No correlation between these two variables
+#> H1: correlated
+#> Using Bayes Factor to indicate the 
+
+
+shapiro.test(Data$CHIRPS_mm_SL_s85) #>>not normal
+shapiro.test(Data$CHIRPS_mm_SL_s02) #>> normal
+shapiro.test(Data$TWSrec_mm_SL_s85) #>> normal
+shapiro.test(Data$GRACE_mm_SL_s02) #>> normal
+
+res1<-ggscatterstats(Data, pp_nat_reg_18, CHIRPS_mm_SL_s85, type = "np")
+res2<-ggscatterstats(Data, pp_nat_reg_18, CHIRPS_mm_SL_s02, type = "p")
+res3<-ggscatterstats(Data, pp_nat_reg_18, TWSrec_mm_SL_s85, type = "p")
+res4<-ggscatterstats(Data, pp_nat_reg_18, GRACE_mm_SL_s02, type = "p")
+
+combine_plots(
+  list(res1, res2, res3, res4),
+  plotgrid.args = list(nrow = 2))
+
+
+#============================== To interpret some results test ===================================#
+interpret_omega_squared(0.38) #>>> Parametric (normally distributed)
+interpret_epsilon_squared(0.47) #>>> Non-parametric (NOT normally distributed)
+interpret_bf(-4.96, log = T, include_value = T)
+#>>> Bayes Factor (log=TRUE) interpretation (Jeffreys, 1961)
+#>H0: 
+#> If (+): in favour of the H0!!!!
+#> If (-): against of the H0!! Could report as "in favour of the H1"
+
+
+#' BF10 indicates the Bayes factor in favor of H1 over H0.
+#' BF01 indicates the Bayes factor in favor of H0 over H1. 
+#' Specifically, BF01 = 1/BF10. Larger positive values of BF01 indicate more support for H0.
+#' Bayes factors range from 0 to ∞, and a Bayes factor of 1 indicates that both hypotheses
+#' predicted the data equally well.
