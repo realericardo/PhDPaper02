@@ -1,0 +1,180 @@
+/**====================================================================================**\
+ * Code adapted from MapBiomas initiative                                               *
+ * Author: Ricardo Reale                                                                *
+ * Contact: realericardo[at]gmail[dot]com                                               *
+ * Script adpted from: MapBiomas (helped by João Siqueira/Marcos Rosa) - many thanks!!  *
+ *                                                                                      *
+\**====================================================================================**/
+
+// >>>>>>>>>>>>>>>> Should match the "asset" and "your interest area""
+
+// PanAmazonia - collection-3.0
+var asset1 = "projects/mapbiomas-raisg/public/collection3/mapbiomas_raisg_panamazonia_collection3_integration_v2";
+
+// Brazil - collection-6.0
+var asset2 = "projects/mapbiomas-workspace/public/collection6/mapbiomas_collection60_integration_v1";
+
+// Chaco (2000 - 2019) - collection-2.0
+var asset3 = "projects/mapbiomas-chaco/public/collection2/mapbiomas_chaco_collection2_integration_v1";
+
+// Atlantic Forest - trinacional (2000-2019) - collection-1.0
+var asset4 = "projects/mapbiomas_af_trinacional/public/collection1/mapbiomas_atlantic_forest_collection1_integration_v1";
+
+// Pampa (2000 - 2019) - collection-1.0
+var asset5 = "projects/MapBiomas_Pampa/public/collection1/mapbiomas_pampa_collection1_integration_v1";
+
+// deforestation_regeneration
+var asset6 = "projects/mapbiomas-workspace/public/collection5/mapbiomas_collection50_deforestation_regeneration_v1";
+
+/**
+ * ==================================================================================== *
+ * ============= CAUTION! ADJUST THE YEARS ACCORDING TO THE ASSETS below! ============= *
+ * ==================================================================================== *
+ */
+// List of years to export (ADJUST YEARS ACCORD WITH ASSETS)
+var yearsAmzBrzAtl = [
+    '1985', '1986', '1987', '1988', '1989', '1990', '1991', '1992',
+    '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000',
+    '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
+    '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016',
+    '2017', '2018', '2019', '2020'];
+
+var yearsPmpChc = [
+    '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
+    '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016',
+    '2017', '2018', '2019'];
+
+var BASIN = table; // Area of inteterest
+
+// List of Years (CHC and PMP 2000-2019 >> the others 1985 to 2020)
+var years = yearsAmzBrzAtl; // yearsAmzBrzAtl OR yearsPmpChc
+
+// Assets: 1-AMZ; 2-BRZ; 3-CHC; 4-AtlFor; 5-Pampa
+var assetX = asset1; // Choose and change number of MapBiomas assets
+
+// Get the name of ROI (get the information of the column 'Name')
+var regionName = ee.FeatureCollection(BASIN).sort('Name', true);
+
+// file name to export
+var nome = regionName.aggregate_array("Name").getInfo();
+var fileName = nome;
+//print(fileName);
+
+var folderName = 'MapBiomas';
+
+// Change the scale if you need.
+var scale = 30;
+
+/**
+ *
+ * Make an image out of the land area attribute.
+ * 
+ */
+
+// Asset of regions for which you want to calculate statistics
+
+
+// Territory image
+var territory = BASIN.filter(ee.Filter.notNull(['GIS_AREA'])) 
+                  .reduceToImage({
+                    properties: ['GIS_AREA'],
+                    reducer: ee.Reducer.first()
+                    }).clipToCollection(BASIN);
+
+// LULC mapbiomas image //change <<paROI>> for <<BASIN>> 
+var mapbiomas = ee.Image(assetX).clipToCollection(BASIN).selfMask(); 
+
+// Image area in km2
+var pixelArea = ee.Image.pixelArea().divide(1e6);
+
+// Geometry to export
+var geometry = mapbiomas.geometry();
+
+/**
+ * Convert a complex ob to feature collection
+ * @param obj 
+ */
+var convert2table = function (obj) {
+
+    obj = ee.Dictionary(obj);
+
+    var territory = obj.get('territory');
+
+    var classesAndAreas = ee.List(obj.get('groups'));
+
+    var tableRows = classesAndAreas.map(
+        function (classAndArea) {
+            classAndArea = ee.Dictionary(classAndArea);
+
+            var classId = classAndArea.get('class');
+            var area = classAndArea.get('sum');
+
+            var tableColumns = ee.Feature(null)
+                .set('territory', territory)
+                .set('class', classId)
+                .set('area', area);
+
+            return tableColumns;
+        }
+    );
+
+    return ee.FeatureCollection(ee.List(tableRows));
+};
+
+/**
+ * Calculate area crossing a cover map (deforestation, mapbiomas)
+ * and a region map (states, biomes, municipalites)
+ * @param image 
+ * @param territory 
+ * @param geometry
+ */
+var calculateArea = function (image, territory, geometry) {
+
+    var reducer = ee.Reducer.sum().group(1, 'class').group(1, 'territory');
+
+    var territotiesData = pixelArea.addBands(territory).addBands(image)
+        .reduceRegion({
+            reducer: reducer,
+            geometry: geometry,
+            scale: scale,
+            maxPixels: 1e12
+        });
+
+    territotiesData = ee.List(territotiesData.get('groups'));
+
+    var areas = territotiesData.map(convert2table);
+
+    areas = ee.FeatureCollection(areas).flatten();
+
+    return areas;
+};
+
+var areas = years.map(
+    function (year) {
+        var image = mapbiomas.select('classification_' + year);
+
+        var areas = calculateArea(image, territory, geometry);
+
+        // set additional properties
+        areas = areas.map(
+            function (feature) {
+                return feature.set('year', year);
+            }
+        );
+
+        return areas;
+    }
+);
+
+areas = ee.FeatureCollection(areas).flatten();
+
+// Export TABLE of areas of paROI OR noPA
+Export.table.toDrive({
+    collection: areas,
+    description: fileName,
+    folder: folderName,
+    fileNamePrefix: fileName,
+    fileFormat: 'CSV'
+});
+
+
