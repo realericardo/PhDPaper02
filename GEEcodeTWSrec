@@ -1,0 +1,89 @@
+/**===================================================================================**\
+ * Code for colect GRACE reconstruction (data from Vincent Humphrey)                   *
+ * Author: Ricardo Reale                                                               *
+ * Contact: realericardo [at] gmail [dot] com                                          *
+ * GRACE reconstruction:  'https://figshare.com/authors/Vincent_Humphrey/6094340'      *
+ * Reference paper:                                                                    *
+ * >>>>>>> Humphrey, V., & Gudmundsson, L.(2019). GRACE-REC: a reconstruction of <<<<< *
+ * >>>>>>>    climate-driven water storage changes over the last century.        <<<<< *
+ * >>>>>>>    Earth System Science Data, 11(3), 1153-1170                        <<<<< *
+\**===================================================================================**/
+
+/**===================================================================================**\
+ *                      Naming files and folder to export table                        *
+\**===================================================================================**/
+// change table for your region of interest (ROI) 
+var BASIN = ee.FeatureCollection(table);
+
+// Get the name of ROI (get the information of the column 'Name')
+var regionName = BASIN.sort('Name', true);
+
+// file name to export
+var fileName = 'Grace_'+regionName.aggregate_array("Name").getInfo();
+//print(fileName);
+
+// change for your choose
+var folderName = 'GRACE';
+
+/**===================================================================================**\
+ *        Adjustment to collect and export data (file names, folder names...           *
+\**===================================================================================**/
+// Clip image with .clipToCollection (once BASIN has complex geometry)
+var grace = ee.Image(grace_rec_JPL_ERA5).clipToCollection(BASIN);
+// Function to collect number of bands and build new collection (img to imgcollection)
+// rename all bands to specific band (bands represents months of measures)
+var bandToCollection = function(collection){
+// get band names
+ var bands =  collection.bandNames();
+ var monthCounter = ee.List.sequence(1, bands.size());
+
+  // build new collection with 1 image per band
+ var newCollection = monthCounter.map(function(b){
+  
+   var img = ee.Image(collection.select(
+                           ee.String(bands.get(ee.Number(b).subtract(1)))));
+   // Starting date
+   var start = ee.Date(grace.get('system:time_start')).advance(b, 'month'); 
+
+ return img.set('system:time_start', start.millis()).rename('TWS');
+ });
+  
+ return newCollection;
+};
+
+// Organize collection and band name (all bands representing samething)
+var badSize = grace.bandNames().size();
+var organizeCollection = ee.List.sequence(1, badSize).map(function(n) { 
+  // Starting date
+  var start = ee.Date(grace.get('system:time_start')).advance(n, 'month'); 
+  // Step by each iteration
+  var end = start.advance(1, 'month'); 
+
+  return ee.ImageCollection(bandToCollection(grace))
+         .filterDate(start, end)
+         .filterBounds(BASIN)
+         .mean()
+         .set('system:time_start', start.millis());
+});
+
+// Get collection's values
+var feats = ee.ImageCollection(organizeCollection).map(function(image){
+    return ee.Feature(BASIN.geometry(),
+                               image.reduceRegion(ee.Reducer.mean(), BASIN, 300000))
+                               .set({date: image.date().format('yyyy-MM-dd')})
+                               .set({region: regionName.aggregate_array("Name")});
+  });
+
+//  print(fileName, feats);
+
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats, 
+    description: fileName, 
+    folder: folderName, 
+    fileFormat: 'CSV' ,
+    selectors: ['date', 'region', 'TWS']
+  });
+  
+  
+  
