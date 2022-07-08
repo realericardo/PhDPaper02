@@ -1,0 +1,667 @@
+/**=====================================================================================**\
+ * Code for colect GRACE_mean data                                                       *
+ * Exporting "n" tables of "n" regions of interest                                       *
+ * Author: Ricardo Reale                                                                 *
+ * Contact: realericardo[at]gmail[dot]com                                                *
+\**=====================================================================================**/
+
+// Change "tables" for interested area
+var BASIN01 = table
+var BASIN02 = table2;
+var BASIN03 = table3;
+var BASIN04 = table4;
+var BASIN05 = table5;
+var BASIN06 = table6;
+var BASIN07 = table7;
+var BASIN08 = table8;
+var BASIN09 = table9;
+var BASIN10 = table10;
+var BASIN11 = table11;
+var BASIN12 = table12;
+var BASIN13 = table13;
+var BASIN14 = table14;
+var BASIN15 = table15;
+var BASIN16 = table16;
+var BASIN17 = table17;
+var BASIN18 = table18;
+var BASIN19 = table19;
+var BASIN20 = table20;
+var BASIN21 = table21;
+var BASIN22 = table22;
+var BASIN23 = table23;
+var BASIN24 = table24;
+var BASIN25 = table25;
+var BASIN26 = table26;
+var BASIN27 = table27;
+var BASIN28 = table28;
+var BASIN29 = table29;
+var BASIN30 = table30;
+var BASIN31 = table31;
+var BASIN32 = table32;
+var BASIN33 = table33;
+var BASIN34 = table34;
+var BASIN35 = table35;
+var BASIN36 = table36;
+var BASIN37 = table37;
+var BASIN38 = table38;
+var BASIN39 = table39;
+var BASIN40 = table40;
+var BASIN41 = table41;
+var BASIN42 = table42;
+var BASIN43 = table43;
+var BASIN44 = table44;
+var BASIN45 = table45;
+
+// Change "description" and "folder" as folders to save archives in GoogleDrive
+var folder = '2-GRACE';
+
+// Data for GRACE - using GRACE-Land to do mean of CSR, GFZ and JPL
+// GRACE data filter and add bands means
+var correction = ee.Image('NASA/GRACE/MASS_GRIDS/LAND_AUX_2014').select('SCALE_FACTOR');
+var dataGRACE = ee.ImageCollection("NASA/GRACE/MASS_GRIDS/LAND")
+             .map(function(image) {
+    return image.addBands(
+        image.expression('(a1 + b1 +c1) / 3', {
+            a1: image.select('lwe_thickness_csr').multiply(correction),
+            b1: image.select('lwe_thickness_gfz').multiply(correction),
+            c1: image.select('lwe_thickness_jpl').multiply(correction),
+        }).rename('TWScm_mean')
+    ).select('TWScm_mean');
+});
+
+// Chart
+print(ui.Chart.image.series(dataGRACE, table, ee.Reducer.mean()));
+print(ui.Chart.image.series(dataGRACE, table2, ee.Reducer.mean()));
+print(ui.Chart.image.series(dataGRACE, table3, ee.Reducer.mean()));
+print(ui.Chart.image.series(dataGRACE, table4, ee.Reducer.mean()));
+
+// Export table
+// get the values
+var feats1 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN01, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats2 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN02, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats3 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN03, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats4 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN04, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats5 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN05, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats6 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN06, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats7 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN07, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats8 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN08, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats9 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN09, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats10 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN10, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats11 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN11, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats12 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN12, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats13 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN13, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats14 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN14, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats15 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN15, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats16 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN16, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats17 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN17, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats18 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN18, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats19 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN19, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats20 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN20, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats21 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN21, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats22 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN22, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats23 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN23, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats24 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN24, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats25 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN25, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats26 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN26, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats27 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN27, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats28 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN28, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats29 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN29, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats30 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN30, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats31 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN31, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats32 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN32, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats33 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN33, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats34 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN34, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats35 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN35, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats36 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN36, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats37 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN37, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats38 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN38, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats39 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN39, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats40 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN40, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats41 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN41, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats42 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN42, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats43 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN43, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats44 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN44, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+var feats45 = dataGRACE.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN45, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')});
+  });
+
+// Change "description names" to identify the files in the folder
+var description1 = 'AMZ01_grace'
+var description2 = 'AMZ02_grace'
+var description3 = 'AMZ03_grace'
+var description4 = 'AMZ04_grace'
+var description5 = 'AMZ05_grace'
+var description6 = 'AMZ06_grace'
+var description7 = 'AMZ07_grace'
+var description8 = 'AMZ08_grace'
+var description9 = 'AMZ09_grace'
+var description10 = 'AMZ10_grace'
+var description11 = 'AMZ11_grace'
+var description12 = 'AMZ12_grace'
+var description13 = 'AMZ13_grace'
+var description14 = 'AMZ14_grace'
+var description15 = 'AMZ15_grace'
+var description16 = 'AMZ16_grace'
+var description17 = 'AMZ17_grace'
+var description18 = 'AMZ18_grace'
+var description19 = 'AMZ19_grace'
+var description20 = 'AMZ20_grace'
+var description21 = 'CHC01_grace'
+var description22 = 'CHC02_grace'
+var description23 = 'CHC03_grace'
+var description24 = 'CHC04_grace'
+var description25 = 'CHC05_grace'
+var description26 = 'NOR01_grace'
+var description27 = 'NOR02_grace'
+var description28 = 'NOR03_grace'
+var description29 = 'NOR04_grace'
+var description30 = 'NOR05_grace'
+var description31 = 'NOR06_grace'
+var description32 = 'NOR07_grace'
+var description33 = 'ORN01_grace'
+var description34 = 'ORN02_grace'
+var description35 = 'ORN03_grace'
+var description36 = 'PRT01_grace'
+var description37 = 'PRT02_grace'
+var description38 = 'PRT03_grace'
+var description39 = 'PRT04_grace'
+var description40 = 'PRT05_grace'
+var description41 = 'TOC01_grace'
+var description42 = 'TOC02_grace'
+var description43 = 'TOC03_grace'
+var description44 = 'PMP01_grace'
+var description45 = 'PMP02_grace'
+
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats1,
+    description: description1, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats2,
+    description: description2, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats3,
+    description: description3, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats4,
+    description: description4, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats5,
+    description: description5, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats6,
+    description: description6, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats7,
+    description: description7, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats8,
+    description: description8, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats9,
+    description: description9, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats10,
+    description: description10, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats11,
+    description: description11, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats12,
+    description: description12, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats13,
+    description: description13, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats14,
+    description: description14, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats15,
+    description: description15, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats16,
+    description: description16, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats17,
+    description: description17, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats18,
+    description: description18, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats19,
+    description: description19, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats20,
+    description: description20, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats21,
+    description: description21, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats22,
+    description: description22, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats23,
+    description: description23, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats24,
+    description: description24, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats25,
+    description: description25, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats26,
+    description: description26, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats27,
+    description: description27, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats28,
+    description: description28, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats29,
+    description: description29, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats30,
+    description: description30, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats31,
+    description: description31, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats32,
+    description: description32, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats33,
+    description: description33, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats34,
+    description: description34, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats35,
+    description: description35, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats36,
+    description: description36, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats37,
+    description: description37, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats38,
+    description: description38, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats39,
+    description: description39, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats40,
+    description: description40, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats41,
+    description: description41, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats42,
+    description: description42, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats43,
+    description: description43, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats44,
+    description: description44, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats45,
+    description: description45, 
+    folder: folder, 
+    fileFormat: 'CSV', 
+    selectors: ['date', 'TWScm_mean']
+  });
