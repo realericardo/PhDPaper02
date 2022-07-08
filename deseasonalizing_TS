@@ -1,0 +1,47 @@
+# ===============================================================================
+# Thesis: Paper02 - Quantifying ecosystem services
+# Decomposition of time series
+# Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com
+# Created: Apr/2022
+# Last commit: Apr/2022
+# ===============================================================================
+# Packages:
+
+library(tidyverse)
+library(lubridate)
+library(oce)
+library(forecast)
+
+#### TWSrec are already adjusted (original data came adjusted)
+setwd("....")
+
+Data <- read.csv("....")
+Data<-....
+
+tssData <- tapply(Data$"variable of interest", Data$region, ts, start = c(YYYY, M), end = c(YYYY,M), frequency = 12)
+
+tssDataDes <- lapply(tssData, decompose) 
+
+results<-do.call(cbind,lapply(tssDataDes, function(x) unlist(x)))
+
+#### Select original data to be decomposed
+#original<- ts(data = results[1:178,], start = c(1985, 1), end = c(2018,12), frequency = 12) ##results[x:xxx] will change depending of the number of months (TS)
+original<- ts(data = results[1:408,], start = c(1985, 1), end = c(2018,12), frequency = 12) ##results[x:xxx] will change depending of the number of months (TS)
+
+original<-as.numeric(original)
+
+#### Select seasonal data decomposed
+#originalSeason<- ts(results[179:356,], start = c(1985, 1), end = c(2018,12), frequency = 12) ##results[x:xxx] will change depending of the number of months (TS)
+originalSeason<- ts(results[409:816,], start = c(1985, 1), end = c(2018,12), frequency = 12) ##results[x:xxx] will change depending of the number of months (TS)
+
+originalSeason<- as.numeric(originalSeason)
+
+#### subtract seasonal from original data (original data - seasonal)
+DataAdjusted = original - originalSeason
+
+DataAdjusted <- as.data.frame(DataAdjusted)
+
+plot(ts(DataAdjusted, start = c(1985, 1), end = c(2018,12), frequency = 12))
+
+write_csv(DataAdjusted, "Variable_of_interes_adjusted.csv")
+
