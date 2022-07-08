@@ -1,0 +1,29 @@
+# ===============================================================================
+# Thesis: Paper02 - Quantifying ecosystem services
+# Decomposition of time series
+# Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com
+# Created: Apr/2022
+# Last commit: Apr/2022
+# ===============================================================================
+# Packages:
+# stats
+#=========== Decomposition by stats::stl
+
+data<-###data/variable of interest
+
+#Transform to time series
+ts.data1 = ts(data, start = c(YYYY, M), end = c(YYYY, M), frequency=12)
+#Plot seasonality, trend
+
+plot(stl(ts.data1, "periodic"))
+plot(ts.data1)
+
+decomposed <- stl(ts.data1, s.window=12)
+seasonal <- decomposed$time.series[,1]
+trend   <- decomposed$time.series[,2]
+remainder <- decomposed$time.series[,3]
+
+# deseasonalize time sereis
+ts.dataDes <- ts.data1 - seasonal
+plot(ts.dataDes)
+
