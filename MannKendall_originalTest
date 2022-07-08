@@ -1,0 +1,36 @@
+# ===============================================================================
+# Thesis: Paper02 - Quantifying ecosystem services
+# Decomposition of time series
+# Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com
+# Created: Apr/2022
+# Last commit: Apr/2022
+# ===============================================================================
+# Packages:
+#
+library(readr)
+library(tidyr)
+library(tidyverse)
+library(forecast)
+library(trend)
+library(modifiedmk)
+library(tidyselect)
+library(dplyr)
+#
+#================================================================================================#
+setwd("...")
+
+#============================================= Data =============================================#
+df_85 <- read.csv(".../Data_1985_2018.csv")
+df_02 <- read.csv(".../Data_2002_2016.csv")
+
+#================================================================================================#
+#==== Applying Mann-Kendall (original test) over all data and summarizing interested results ====#
+#================================================================================================#
+
+MK_Data<-df_85 %>%
+  group_by(region) %>%
+  summarise(across(-1,  ~as_tibble_row(mkttest(.))))
+
+write.csv(as.matrix(MK_Data), "MK_data85.csv")
+
+
