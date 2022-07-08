@@ -1,0 +1,23 @@
+# ===============================================================================
+# Thesis: Paper02 - Quantifying ecosystem services
+# Decomposition of time series
+# Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com
+# Created: Apr/2022
+# Last commit: Apr/2022
+# ===============================================================================
+# Packages:
+# oce; dplyr; zoo
+#=========== filling gap >> GRACE_TWS
+library(oce)
+setwd("......")
+Grace <- read.csv(".../GRACE.csv")
+TSfilled<-fillGap(Grace$GRACEmean, method = c("linear"), rule = 2)
+write_csv(data.frame(TSfilled), "GRACEmean_filled.csv")
+#####
+
+library(dplyr)
+library(zoo)
+TSfilled_Nat<-TS %>% 
+  group_by(region) %>%
+  mutate(Nat = na.aggregate(Nat))
+
