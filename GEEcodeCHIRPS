@@ -1,0 +1,61 @@
+/**====================================================================================**\
+ * Code for CHIRPS data collection                                                      *
+ * Thesis: Paper02 - Quantifying ecosystem services                                     *
+ * Author: Ricardo Reale                                                                *
+ * Contact: realericardo[ at ]gmail[ dot ]com                                           *
+ *                                                                                      *
+\**====================================================================================**/
+
+var AOI = table; //Change table for AOI (Using column "Name" to export fileName etc)
+
+/**===================================================================================**\
+ *                      Naming files and folder to export table                        *
+\**===================================================================================**/
+// change table for your region of interest (ROI) 
+var BASIN = ee.FeatureCollection(AOI);
+
+// Get the name of ROI (get the information of the column 'Name')
+var regionName = ee.FeatureCollection(AOI).sort('Name', true);
+
+// file name to export
+var fileName = regionName.aggregate_array("Name").getInfo();
+//print(fileName);
+
+// change for your choose
+var folderName = 'CHIRPS';
+
+
+/**===================================================================================**\
+ *        Adjustment to collect and export data (file names, folder names...           *
+\**===================================================================================**/
+var year_mean = ee.List.sequence(0, 12500).map(function(n) { 
+  var start = ee.Date('1984-12-15').advance(n, 'day'); // Starting date
+  var end = start.advance(1, 'day'); // Step by each iteration
+
+  return ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
+        .filterDate(start, end)
+        .filterBounds(BASIN)
+        .sum()
+        .set('system:time_start', start.millis());
+});
+
+var collection = ee.ImageCollection(year_mean);
+
+// get the values
+var feats = collection.map(function(image){
+    return ee.Feature(null, image.reduceRegion(ee.Reducer.mean(), BASIN, 5000))
+                .set({date: image.date().format('yyyy-MM-dd')})
+                .set({region: fileName});
+  });
+
+  //print(nome, feats);
+
+  // export a CSV file
+  Export.table.toDrive({
+    collection: feats, 
+    description: fileName, 
+    folder: folderName, 
+    fileFormat: 'CSV', 
+    selectors: ['region', 'date', 'precipitation']
+  });
+
