@@ -1,14 +1,13 @@
 #======================================== ggbetweenstats =========================================#
-##' Thesis: Paper02 - Quantifying ecosystem services.                                             #
-##' Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com                                      #
+##' Code for statistical analysis of the paper "TITLE"                                            #
+##' Author: Ricardo Reale                                                                         #
+##' Contact: realericardo@gmail.com                                                               #
 ##' Adapted from: Zablotski (2022, May 16). yuzaR-Blog: R demo | Kruskal-Wallis test |            #
 ##' How to conduct, visualize, interpret & more 😉.                                               #
 ##' Retrieved from https://yuzar-blog.netlify.app/posts/2022-04-13-kw/                            #
-##' Created: Apr/2022                                                                             #
-##' Last commit: Apr/2022                                                                         #
 #=================================================================================================#
 
-setwd("...")
+setwd(".......")
 
 # Packages
 library(readr)
@@ -27,8 +26,7 @@ library(performance)    # model assumptions & performance
 library(pcal) #bfcator_interpret
 
 #============================================= Data ==============================================#
-Data <- read.csv(
-  ".../Data.csv")
+Data <- read.csv("....../Data.csv")
 
 #============================== Trend groups Classification Ant.Nat ==============================#
 #========================================= Normality test ========================================#
@@ -47,8 +45,8 @@ leveneTest(TWSrec_mm_SL_s85 ~ Clas_ant.nat.2018, Data) ## Need to check all vari
 ## Statistical comparison beteween groups (Native, Changin, Anthropized)
 c1 <- ggbetweenstats(
   data = Data,
-  x    = Clas_ant.nat.2018, # Clas_ant2018.nat.1985 / Clas_ant2018.nat.2002 / Clas_ant.nat.2018
-  y    = CHIRPS_mm_SL_s02, ## normally distributed and Different Variance
+  x    = Clas_ant.nat.2018,
+  y    = CHIRPS_mm_SL_s02,
   results.subtitle = T,
   var.equal = F, # F for Welsh ANOVA: Variance different
   type = "p", # parametric, nonparametric, robust, bayes
@@ -64,8 +62,8 @@ c1 <- ggbetweenstats(
 
 c2 <- ggbetweenstats(
   data = Data,
-  x    = Clas_ant.nat.2018, # Clas_ant2018.nat.1985 / Clas_ant2018.nat.2002 / Clas_ant.nat.2018
-  y    = GRACE_mm_SL_s02, ## normally distributed and variance NOT differs
+  x    = Clas_ant.nat.2018,
+  y    = GRACE_mm_SL_s02,
   results.subtitle = T,
   var.equal = T, # T for Fisher ANOVA: Variance NOT Differs
   type = "p", # parametric, nonparametric, robust, bayes
@@ -81,8 +79,8 @@ c2 <- ggbetweenstats(
 
 c3 <- ggbetweenstats(
   data = Data, 
-  x    = Clas_ant.nat.2018, # Clas_ant2018.nat.1985 / Clas_ant2018.nat.2002 / Clas_ant.nat.2018
-  y    = CHIRPS_mm_SL_s85, ## NOT normally distributed and Different Variance
+  x    = Clas_ant.nat.2018,
+  y    = CHIRPS_mm_SL_s85,
   results.subtitle = T,
   var.equal = T, # F for Welsh ANOVA: Variance different
   type = "p", # parametric, nonparametric, robust, bayes
@@ -98,8 +96,8 @@ c3 <- ggbetweenstats(
 
 c4 <- ggbetweenstats(
   data = Data,
-  x    = Clas_ant.nat.2018, # Clas_ant2018.nat.1985 / Clas_ant2018.nat.2002 / Clas_ant.nat.2018
-  y    = TWSrec_mm_SL_s85, ## NOT normally distributed and NOT Different Variance
+  x    = Clas_ant.nat.2018,
+  y    = TWSrec_mm_SL_s85,
   results.subtitle = T,
   var.equal = T, # T for Fisher ANOVA: Variance NOT Differs
   type = "np", # parametric, nonparametric, robust, bayes
@@ -139,8 +137,8 @@ leveneTest(CHIRPS_mm_SL_s02 ~ GRACE_trend_s02, Data)
 ## Statistical comparison beteween trend groups
 t1 <- ggbetweenstats(
   data = Data,
-  x    = TWSrec_trend_s85, # Clas_ant2018.nat.1985 / Clas_ant2018.nat.2002 / Clas_ant.nat.2018
-  y    = CHIRPS_mm_SL_s85, ## NOT normally distributed and NOT Differ Variance
+  x    = TWSrec_trend_s85,
+  y    = CHIRPS_mm_SL_s85,
   results.subtitle = T,
   var.equal = T, # F for Welsh ANOVA: Variance different
   type = "np", # parametric, nonparametric, robust, bayes
@@ -156,8 +154,8 @@ t1 <- ggbetweenstats(
 
 t2 <- ggbetweenstats(
   data = Data, 
-  x    = GRACE_trend_s02, # Clas_ant2018.nat.1985 / Clas_ant2018.nat.2002 / Clas_ant.nat.2018
-  y    = CHIRPS_mm_SL_s02, ## NOT normally distributed and Different Variance
+  x    = GRACE_trend_s02,
+  y    = CHIRPS_mm_SL_s02,
   results.subtitle = T,
   var.equal = T, # F for Welsh ANOVA: Variance different
   type = "np", # parametric, nonparametric, robust, bayes
@@ -201,78 +199,82 @@ interpret_bf(-2.7, log = T, include_value = T)
 #==================================== Linear Regression models ===================================#
 # y~x >>> precipitation (CHIRPS) ~ % area of native covered
 # Plot linear trend + confidence interval
-sc1 <- ggplot(Data, aes(y = CHIRPS_mm_SL_s02, x=pp_nat_reg_18)) +
+sc1 <- ggplot(Data, aes(y = CHIRPS_02_120mont, x=pp_nat_reg_18)) +
   geom_point() +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_y_continuous(labels = scales::comma) + 
-  scale_x_continuous(labels = scales::comma) +
+  scale_x_continuous(labels = percent) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Sen's slop of CHIRPS (mm/month)",
-       x="% of the regiona area covered by natural vegetation 2018",
-       title = "SL for CHIRPS (2002 - 2016) x % of Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n CHIRPS 2002-2016",
+       x="Cobertura de vegetação nativa por região do ano de 2018",
+       title = "Tendência decenal de CHIRPS pela % de Vegetação Nativa de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=2,parse=T,col="red")
 
 # y~x >>> GRACE ~ % area of native covered
 # Plot linear trend + confidence interval
-sc3 <- ggplot(Data, aes(y=GRACE_mm_SL_s02, x=pp_nat_reg_18)) +
+sc3 <- ggplot(Data, aes(y=GRACE_120month, x=pp_nat_reg_18)) +
   geom_point() +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_y_continuous(labels = scales::comma) + 
-  scale_x_continuous(labels = scales::comma) +
+  scale_x_continuous(labels = percent) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Sen's slop of GRACE (mm/month)",
-       x="% of the regiona area covered by natural vegetation 2018",
-       title = "SL for GRACE (2002 - 2016) x % of Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n GRACE 2002-2016",
+       x="Cobertura de vegetação nativa por região do ano de 2018",
+       title = "Tendência decenal de GRACE pela % de Vegetação Nativa de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=2,parse=T,col="red")
 
 # y~x >>> precipitation (CHIRPS) ~ % area of native covered
 # Plot linear trend + confidence interval
-se1 <- ggplot(Data, aes(y=CHIRPS_mm_SL_s85, x=pp_nat_reg_18)) +
+se1 <- ggplot(Data, aes(y=CHIRPS_85_120mont, x=pp_nat_reg_18)) +
   geom_point() +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_y_continuous(labels = scales::comma) + 
-  scale_x_continuous(labels = scales::comma) +
+  scale_x_continuous(labels = percent) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Sen's slop of CHIRPS (mm/month)",
-       x="% of the regiona area covered by natural vegetation 2018",
-       title = "SL for CHIRPS (1985 - 2018) x % of Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n CHIRPS 1985-2018",
+       x="Cobertura de vegetação nativa por região do ano de 2018",
+       title = "Tendência decenal de CHIRPS pela % de Vegetação Nativa de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=2,parse=T,col="red")
 
 # y~x >>> precipitation (TWSrec) ~ % area of native covered
 # Plot linear trend + confidence interval
-se3 <- ggplot(Data, aes(y=TWSrec_mm_SL_s85, x=pp_nat_reg_18)) +
+se3 <- ggplot(Data, aes(y=TWSrec_120month, x=pp_nat_reg_18)) +
   geom_point() +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_y_continuous(labels = scales::comma) + 
-  scale_x_continuous(labels = scales::comma) +
+  scale_x_continuous(labels = percent) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Sen's slop of TWSrec (mm/month)",
-       x="% of the regiona area covered by natural vegetation 2018",
-       title = "SL for TWSrec (1985 - 2018) x % of Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n TWSrec 1985-2018",
+       x="Cobertura de vegetação nativa por região do ano de 2018",
+       title = "Tendência decenal de TWSrec pela % de Vegetação Nativa de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=2,parse=T,col="red")
 
 ## combining the individual plots into a single plot
 combine_plots(
- list(sc1, sc3, se1, se3),
- plotgrid.args = list(nrow = 2),
- annotation.args = list(
-#title ="Sen's slope magnitude trend of precipitation (left) and terrestrial water storage (right)"
+  list(sc1, sc3, se1, se3),
+  plotgrid.args = list(nrow = 2),
+  annotation.args = list(
+    #title ="Sen's slope magnitude trend of precipitation (left) and terrestrial water storage (right)"
     #    caption = "Source: TESTE"
   )
 )
@@ -280,69 +282,73 @@ combine_plots(
 #=============================== Linear Regression models Residues ===============================#
 # y~x >>> precipitation (CHIRPS) ~ % area of native covered
 # Plot residues
-lm_fit_se1 <- lm(CHIRPS_mm_SL_s85 ~ pp_nat_reg_18, data=Data)
+lm_fit_se1 <- lm(CHIRPS_85_120mont ~ pp_nat_reg_18, data=Data)
 Data$resid_se1 <- resid(lm_fit_se1)
-se2 <- ggplot(Data, aes(y=CHIRPS_mm_SL_s85, x=resid_se1)) +
+se2 <- ggplot(Data, aes(y=CHIRPS_85_120mont, x=resid_se1)) +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_x_continuous(labels = scales::comma) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Residues of linear model of Sen's slope of CHIRPS",
-       x="Residues of the regiona area covered by natural vegetation 2018",
-       title = "Residues for CHIRPS (1985 - 2018) x Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n CHIRPS 1985-2018",
+       x="Resíduos da cobertura de vegetação nativa
+       \n por região do ano de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=3,parse=T,col="red")
 
 # y~x >>> precipitation (CHIRPS) ~ % area of native covered
 # Plot residues
-lm_fit_sc2 <- lm(CHIRPS_mm_SL_s02 ~ pp_nat_reg_18, data=Data)
+lm_fit_sc2 <- lm(CHIRPS_02_120mont ~ pp_nat_reg_18, data=Data)
 Data$resid_sc2 <- resid(lm_fit_sc2)
-sc2 <- ggplot(Data, aes(y=CHIRPS_mm_SL_s02, x=resid_sc2)) +
+sc2 <- ggplot(Data, aes(y=CHIRPS_02_120mont, x=resid_sc2)) +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_x_continuous(labels = scales::comma) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Residues of linear model of Sen's slope of CHIRPS",
-       x="Residues of the regiona area covered by natural vegetation 2018",
-       title = "Residues for CHIRPS (2002 - 2016) x Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n CHIRPS 2002-2016",
+       x="Resíduos da cobertura de vegetação nativa
+       \n por região do ano de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=3,parse=T,col="red")
 
 # y~x >>> precipitation (GRACE) ~ % area of native covered
 # Plot residues
-lm_fit_sc4 <- lm(GRACE_mm_SL_s02 ~ pp_nat_reg_18, data=Data)
+lm_fit_sc4 <- lm(GRACE_120month ~ pp_nat_reg_18, data=Data)
 Data$resid_sc4 <- resid(lm_fit_sc4)
-sc4 <- ggplot(Data, aes(y=GRACE_mm_SL_s02, x=resid_sc4)) +
+sc4 <- ggplot(Data, aes(y=GRACE_120month, x=resid_sc4)) +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_x_continuous(labels = scales::comma) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Residues of linear model of Sen's slope of GRACE",
-       x="Residues of the regiona area covered by natural vegetation 2018",
-       title = "Residues for GRACE (2002 - 2016) x Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n GRACE 2002-2016",
+       x="Resíduos da cobertura de vegetação nativa
+       \n por região do ano de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=3,parse=T,col="red")
 
 # y~x >>> precipitation (TWSrec) ~ % area of native covered
 # Plot residues
-lm_fit_se4 <- lm(TWSrec_mm_SL_s85 ~ pp_nat_reg_18, data=Data)
+lm_fit_se4 <- lm(TWSrec_120month ~ pp_nat_reg_18, data=Data)
 Data$resid_se4 <- resid(lm_fit_se4)
-se4 <- ggplot(Data, aes(y=TWSrec_mm_SL_s85, x=resid_se4)) +
+se4 <- ggplot(Data, aes(y=TWSrec_120month, x=resid_se4)) +
   geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
   theme_classic() +
   scale_x_continuous(labels = scales::comma) +
   theme_minimal() + #removes axes
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  labs(y="Residues of linear model of Sen's slope of TWSrec",
-       x="Residues of the regiona area covered by natural vegetation 2018",
-       title = "Residues for TWSrec (1985 - 2018) x Natural Covering Area for 2018") +
+  labs(y="Taxa de variação da tendência por 10 anos (mm)
+       \n TWSrec 1985-2018",
+       x="Resíduos da cobertura de vegetação nativa
+       \n por região do ano de 2018") +
   stat_poly_eq(aes(label =  paste(stat(eq.label),stat(rr.label), sep = "*\", \"*")),
                formula=y ~ x,coef.digits = 3,rr.digits=3,parse=T,col="red")
 
