@@ -1,14 +1,14 @@
-#======================================== ggbetweenstats =========================================#
+#======================================== ggscatterstats =========================================#
 ##' Thesis: Paper02 - Quantifying ecosystem services                                              #
 ##' Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com                                      #
 ##' Adapted from: Zablotski (2022, May 16). yuzaR-Blog: R demo | Kruskal-Wallis test |            #
 ##' How to conduct, visualize, interpret & more 😉.                                               #
 ##' Retrieved from https://yuzar-blog.netlify.app/posts/2022-04-13-kw/                            #
 ##' Created: Apr/2022                                                                             #
-##' Last commit: Apr/2022                                                                         #
+##' Last commit: July/2022                                                                         #
 #=================================================================================================#
 
-setwd("...")
+setwd(".........")
 
 # Packages
 library(readr)
@@ -27,7 +27,7 @@ library(performance)    # model assumptions & performance
 library(pcal) #bfcator_interpret
 
 #============================================= Data ==============================================#
-Data <- read.csv(".../Data.csv")
+Data <- read.csv("....../Data.csv")
 
 #============================== Trend groups Classification Ant.Nat ==============================#
 #========================================= Normality test ========================================#
@@ -58,10 +58,57 @@ shapiro.test(Data$CHIRPS_mm_SL_s02) #>> normal
 shapiro.test(Data$TWSrec_mm_SL_s85) #>> normal
 shapiro.test(Data$GRACE_mm_SL_s02) #>> normal
 
-res1<-ggscatterstats(Data, pp_nat_reg_18, CHIRPS_mm_SL_s85, type = "np")
-res2<-ggscatterstats(Data, pp_nat_reg_18, CHIRPS_mm_SL_s02, type = "p")
-res3<-ggscatterstats(Data, pp_nat_reg_18, TWSrec_mm_SL_s85, type = "p")
-res4<-ggscatterstats(Data, pp_nat_reg_18, GRACE_mm_SL_s02, type = "p")
+res1<-ggscatterstats(
+  data = Data,
+  x = pp_nat_reg_18,
+  y = CHIRPS_mm_SL_s85,
+  type = "np",
+  xlab = "Cobertura de vegetação nativa por região do ano de 2018",
+  ylab = "Magnitude da inclinação de Sen para 
+       \n precipitação CHIRPS 1985-2018 (mm/mês)",
+  smooth.line.args = list(size = 1.5, color = "blue", method = "lm",
+                          formula = y ~ x, na.rm = TRUE),
+  ggplot.component = list(scale_x_continuous(labels = percent),
+                          scale_y_continuous(labels = scales::comma)))
+
+res2<-ggscatterstats(
+  data = Data,
+  x = pp_nat_reg_18,
+  y = CHIRPS_mm_SL_s02,
+  type = "p",
+  xlab = "Cobertura de vegetação nativa por região do ano de 2018",
+  ylab = "Magnitude da inclinação de Sen para 
+       \n precipitação CHIRPS 2002-2016 (mm/mês)",
+  smooth.line.args = list(size = 1.5, color = "blue", method = "lm",
+                          formula = y ~ x, na.rm = TRUE),
+  ggplot.component = list(scale_x_continuous(labels = percent),
+                          scale_y_continuous(labels = scales::comma)))
+
+res3<-ggscatterstats(
+  data = Data,
+  x = pp_nat_reg_18,
+  y = TWSrec_mm_SL_s85,
+  type = "p",
+  xlab = "Cobertura de vegetação nativa por região do ano de 2018",
+  ylab = "Magnitude da inclinação de Sen para 
+       \n precipitação TWSrec 1985-2018 (mm/mês)",
+  smooth.line.args = list(size = 1.5, color = "blue", method = "lm",
+                          formula = y ~ x, na.rm = TRUE),
+  ggplot.component = list(scale_x_continuous(labels = percent),
+                          scale_y_continuous(labels = scales::comma)))
+
+res4<-ggscatterstats(
+  data = Data,
+  x = pp_nat_reg_18,
+  y = GRACE_mm_SL_s02,
+  type = "p",
+  xlab = "Cobertura de vegetação nativa por região do ano de 2018",
+  ylab = "Magnitude da inclinação de Sen para 
+       \n precipitação GRACE 2002-2016 (mm/mês)",
+  smooth.line.args = list(size = 1.5, color = "blue", method = "lm",
+                          formula = y ~ x, na.rm = TRUE),
+  ggplot.component = list(scale_x_continuous(labels = percent),
+                          scale_y_continuous(labels = scales::comma)))
 
 combine_plots(
   list(res1, res2, res3, res4),
