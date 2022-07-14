@@ -1,10 +1,11 @@
-#======================================== ggbetweenstats =========================================#
-##' Code for statistical analysis of the paper "TITLE"                                            #
-##' Author: Ricardo Reale                                                                         #
-##' Contact: realericardo@gmail.com                                                               #
+#======================================== ggscatterstats =========================================#
+##' Thesis: Paper02 - Quantifying ecosystem services                                              #
+##' Author: Ricardo Reale, realericardo[ at ]gmail[ dot ]com                                      #
 ##' Adapted from: Zablotski (2022, May 16). yuzaR-Blog: R demo | Kruskal-Wallis test |            #
 ##' How to conduct, visualize, interpret & more 😉.                                               #
 ##' Retrieved from https://yuzar-blog.netlify.app/posts/2022-04-13-kw/                            #
+##' Created: Apr/2022                                                                             #
+##' Last commit: July/2022                                                                         #
 #=================================================================================================#
 
 setwd(".......")
