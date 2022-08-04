@@ -29,7 +29,7 @@ var folderName = 'GRACE';
  *        Adjustment to collect and export data (file names, folder names...           *
 \**===================================================================================**/
 // Clip image with .clipToCollection (once BASIN has complex geometry)
-var grace = ee.Image(grace_rec_JPL_ERA5).clipToCollection(BASIN);
+var grace = ee.Image(grace_rec_JPL_ERA5).clipToCollection(BASIN); // Using GRACEreconstruction of Humphrey, V., & Gudmundsson, L.(2019).
 // Function to collect number of bands and build new collection (img to imgcollection)
 // rename all bands to specific band (bands represents months of measures)
 var bandToCollection = function(collection){
